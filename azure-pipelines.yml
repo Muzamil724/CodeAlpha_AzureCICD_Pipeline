@@ -35,3 +35,19 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
+
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn: Build
+  jobs:
+  - job: Deploy
+    displayName: Deploy
+    pool:
+      name: local-agents
+    steps:
+    - task: AzureWebAppContainer@1
+      displayName: Deploy to Azure App Service
+      inputs:
+        azureSubscription: 'azure-rg-devops-task1-connection'
+        appName: 'muzamil-task1-api'
+        containers: '$(containerRegistry)/$(imageRepository):$(tag)'
